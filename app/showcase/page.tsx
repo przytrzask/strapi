@@ -134,10 +134,11 @@ type CameraProps = {
 
 function CameraRig({ children }: CameraProps) {
   const group = useRef<THREE.Group>(null);
+  const snap = useSnapshot(store);
   useFrame((state, delta) => {
 
 
-    easing.damp3(state.camera.position, [0, 0, 2], 0.25, delta);
+    easing.damp3(state.camera.position, [snap.variant === "intro" ? -state.viewport.width / 4 : 0, 0, 2], 0.25, delta);
 
     if (!group.current) return;
     easing.dampE(

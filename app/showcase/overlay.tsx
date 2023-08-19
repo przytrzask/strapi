@@ -6,6 +6,16 @@ import {
 } from 'react-icons/ai'
 import { useSnapshot } from 'valtio'
 import { store } from './store'
+import { AnimatePresence, motion } from 'framer-motion'
+
+
+const transition = { type: 'spring', duration: 0.8 }
+
+const config = {
+  initial: { x: -100, opacity: 0, transition: { ...transition, delay: 0.5 } },
+  animate: { x: 0, opacity: 1, transition: { ...transition, delay: 0 } },
+  exit: { x: -100, opacity: 0, transition: { ...transition, delay: 0 } }
+}
 
 export default function Overlay() {
   const snap = useSnapshot(store)
@@ -15,14 +25,24 @@ export default function Overlay() {
       <header>
         <img className="logo" src='/brainly.png' alt="brainly" />
       </header>
-      {snap.variant === "intro" ? <Intro /> : <Customizer />}
+      <AnimatePresence
+
+
+      >
+
+        {snap.variant === "intro" ? <Intro key="intro"
+          config={config}
+        /> : <Customizer key="customizer" />}
+      </AnimatePresence>
     </div>
   )
 }
 
-function Intro() {
+function Intro({ config }: { config: any }) {
   return (
-    <section key="main">
+    <motion.section
+      {...config}
+    >
       <div className="section--container">
         <div>
           <h1>{`LET'S BUY IT.`}</h1>
@@ -42,7 +62,7 @@ function Intro() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 
