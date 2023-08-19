@@ -1,4 +1,3 @@
-import { Logo } from '@pmndrs/branding'
 import {
   AiOutlineHighlight,
   AiOutlineShopping,
@@ -14,12 +13,8 @@ export default function Overlay() {
   return (
     <div className="container">
       <header>
-        <Logo width="40" height="40" />
-        <div>
-          <AiOutlineShopping size="3em" />
-        </div>
+        <img className="logo" src='/brainly.png' alt="brainly" />
       </header>
-
       {snap.variant === "intro" ? <Intro /> : <Customizer />}
     </div>
   )
@@ -30,7 +25,7 @@ function Intro() {
     <section key="main">
       <div className="section--container">
         <div>
-          <h1>LET'S DO IT.</h1>
+          <h1>{`LET'S BUY IT.`}</h1>
         </div>
         <div className="support--content">
           <div>
@@ -79,9 +74,28 @@ function Customizer() {
             ))}
           </div>
         </div>
-        <button className="share" style={{ background: 'black' }}>
-          DOWNLOAD
-          <AiFillCamera size="1.3em" />
+        <button className="share" style={{ background: 'black' }}
+          onClick={() => {
+            // const link = document.createElement('a')
+            // const canvas = document.querySelector('canvas')
+
+
+            // link.setAttribute("download", `${store.decal}.png`)
+
+            // link.setAttribute(
+            //   'href',
+            //   canvas.toDataURL("image/png").replace('image/png', 'image/octet-stream')
+            // )
+
+            // link.click()
+            // console.log(canvas, link)
+
+
+          }}
+
+        >
+          Add to Cart
+          <AiOutlineShopping size="1.3em" />
         </button>
         <button
           className="exit"

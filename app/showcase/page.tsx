@@ -1,46 +1,49 @@
-"use client"
+"use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AccumulativeShadows, OrbitControls, Center, useGLTF, Environment, RandomizedLight, useTexture, Decal } from "@react-three/drei";
+import {
+  AccumulativeShadows,
+  Center,
+  useGLTF,
+  Environment,
+  RandomizedLight,
+  useTexture,
+  Decal,
+} from "@react-three/drei";
 
-import { useSnapshot } from 'valtio'
-import { store } from './store'
-
+import { useSnapshot } from "valtio";
+import { store } from "./store";
 
 import Overlay from "./overlay";
 
 import { easing } from "maath";
-import * as THREE from 'three'
+import * as THREE from "three";
 
 export default function Page() {
-
-  console.log(document.getElementById('root'))
-
-
-  const [eventSource, setEvent] = useState(() => document.getElementById('root'))
-
-
+  const [eventSource, setEvent] = useState<HTMLElement | null>(
+    null as unknown as HTMLCanvasElement
+  );
 
   useEffect(() => {
-    console.log(eventSource)
-    setEvent(document.getElementById('root'))
-
-  }
-    , [eventSource])
-
-
+    setEvent(document?.getElementById("root"));
+  }, [eventSource]);
 
   return (
     <>
       <Canvas
         shadows
+        // @ts-ignore
         eventSource={eventSource}
         camera={{
           position: [0, 0, 2.5],
-          fov: 25
+          fov: 25,
         }}
-        eventPrefix="client">
+        preserveDrawingl={{
+          preserveDrawingBuffer: true,
+        }}
+        eventPrefix="client"
+      >
         <ambientLight intensity={0.5} />
         <Environment files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr" />
 
@@ -58,59 +61,44 @@ export default function Page() {
 }
 
 const Shirt = (props: any) => {
-
-
-  const snap = useSnapshot(store)
-  const texture = useTexture(`/${snap.decal}.png`)
+  const snap = useSnapshot(store);
+  const texture = useTexture(`/${snap.decal}.png`);
 
   console.log({
-    texture
-  }
-  )
+    texture,
+  });
 
-
-  const { nodes, materials } = useGLTF("/shirt_baked.glb") as any
-
-
+  const { nodes, materials } = useGLTF("/shirt_baked.glb") as any;
 
   useFrame((_state, delta) => {
-    easing.dampC(materials.lambert1.color, snap.color, 0.25, delta)
+    easing.dampC(materials.lambert1.color, snap.color, 0.25, delta);
+  });
 
-  })
+  const scaleX = snap.decal === "logo_brainly-mobile" ? 0.15 : 0.2;
 
   return (
-    <group {...props} dispose={null}>
+    <group rotation={[Math.PI / 2, 0, 0]}>
       <mesh
         castShadow
         geometry={nodes.T_Shirt_male.geometry}
         material={materials.lambert1}
         position={[0.419, 0, 0]}
-        rotation={[Math.PI / 2, 0, 0]}
         dispose={null}
         material-roughness={1}
-
-
       >
         <Decal
-          position={[-0.4, 0.15, -0.3]}
-          rotation={[0, 0, 0]}
-          scale={[0.2, 0.1, 0.1]}
-
+          position={[-0.4, 0.1, -0.35]}
+          scale={[scaleX, 0.15, 0.15]}
+          rotation={[-1.5, 0, 0]}
           map={texture}
-          debug
-
-        // map-anisotropy={16}
-
         />
-
-
-      </mesh>    </group>
+      </mesh>
+    </group>
   );
-}
+};
 
 function Backdrop() {
-  const shadows = useRef(null)
-
+  const shadows = useRef(null);
 
   return (
     <AccumulativeShadows
@@ -120,7 +108,8 @@ function Backdrop() {
       alphaTest={0.85}
       scale={10}
       rotation={[Math.PI / 2, 0, 0]}
-      position={[0, 0, -0.14]}>
+      position={[0, 0, -0.14]}
+    >
       <RandomizedLight
         amount={4}
         radius={9}
@@ -136,29 +125,29 @@ function Backdrop() {
         position={[-5, 5, -9]}
       />
     </AccumulativeShadows>
-  )
+  );
 }
 
 type CameraProps = {
-
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 function CameraRig({ children }: CameraProps) {
-  const group = useRef(null)
+  const group = useRef<THREE.Group>(null);
   useFrame((state, delta) => {
-    easing.damp3(state.camera.position, [0, 0, 2], 0.25, delta)
+
+
+    easing.damp3(state.camera.position, [0, 0, 2], 0.25, delta);
+
+    if (!group.current) return;
     easing.dampE(
       group.current?.rotation,
       [state.pointer.y / 10, -state.pointer.x / 5, 0],
       0.25,
       delta
-    )
-  })
-  return <group ref={group}>{children}</group>
+    );
+  });
+  return <group ref={group}>{children}</group>;
 }
-
-
-
 
 useGLTF.preload("/shirt_baked.glb");
